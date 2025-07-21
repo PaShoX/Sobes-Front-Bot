@@ -112,7 +112,6 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 10000;
 
-// Подключаем вебхук бота к Express
 app.use(express.json());
 app.use("/bot", bot.webhookCallback);
 
@@ -120,7 +119,15 @@ app.get("/", (req, res) => {
 	res.send("Sobes Front Bot запущен ✅");
 });
 
-app.listen(port, "0.0.0.0", async () => {
+app.listen(port, "0.0.0.0", () => {
 	console.log(`Сервер запущен на порту ${port}`);
-	await bot.api.setWebhook(`https://sobes-front-bot.onrender.com/bot `);
 });
+
+// Установка вебхука
+const setupWebhook = async () => {
+	const url = process.env.RENDER_EXTERNAL_URL || "http://localhost:10000";
+	await bot.api.setWebhook(`${url}/bot`);
+	console.log("Webhook установлен:", `${url}/bot`);
+};
+
+setupWebhook();
