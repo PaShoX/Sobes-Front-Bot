@@ -21,6 +21,7 @@ Telegram-бот для подготовки к собеседованиям на
 ---
 
 Бот Задеплоин  на хостинге - [Render.com](https://render.com )
+Найди бота в Telegram: @SobesFrontBot
  
 
 
