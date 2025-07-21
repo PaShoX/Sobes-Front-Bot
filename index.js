@@ -5,6 +5,7 @@ const {
 	GrammyError,
 	HttpError,
 	InlineKeyboard,
+	webhookCallback,
 } = require("grammy");
 const { getRandomQuestion, getCorrectAnswer } = require("./utils");
 
@@ -110,24 +111,25 @@ bot.catch((err) => {
 //Express-сервер
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 10000;
 
 app.use(express.json());
-app.use("/bot", bot.webhookCallback);
+app.use("/bot", webhookCallback(bot, "express"));
 
 app.get("/", (req, res) => {
 	res.send("Sobes Front Bot запущен ✅");
 });
 
-app.listen(port, "0.0.0.0", () => {
-	console.log(`Сервер запущен на порту ${port}`);
+const port = process.env.PORT || 10000;
+
+app.listen(port, "0.0.0.0", async () => {
+	const url = process.env.RENDER_EXTERNAL_URL || `http://localhost:${port}`;
+	const webhookUrl = `${url}/bot`;
+
+	try {
+		await bot.api.setWebhook(webhookUrl);
+		console.log(`Сервер запущен на порту ${port}`);
+		console.log(`Webhook установлен: ${webhookUrl}`);
+	} catch (err) {
+		console.error("Не удалось установить вебхук:", err);
+	}
 });
-
-// Установка вебхука
-const setupWebhook = async () => {
-	const url = process.env.RENDER_EXTERNAL_URL || "http://localhost:10000";
-	await bot.api.setWebhook(`${url}/bot`);
-	console.log("Webhook установлен:", `${url}/bot`);
-};
-
-setupWebhook();
