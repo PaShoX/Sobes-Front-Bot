@@ -107,18 +107,20 @@ bot.catch((err) => {
 	}
 });
 
-//HTTP-сервер
-const http = require("http");
-
-const server = http.createServer((req, res) => {
-	res.writeHead(200, { "Content-Type": "text/plain" });
-	res.end("Sobes Front Bot запущен\n");
-});
-
+//Express-сервер
+const express = require("express");
+const app = express();
 const port = process.env.PORT || 10000;
 
-server.listen(port, "0.0.0.0", () => {
-	console.log(`Сервер запущен на порту ${port}`);
+// Подключаем вебхук бота к Express
+app.use(express.json());
+app.use("/bot", bot.webhookCallback);
+
+app.get("/", (req, res) => {
+	res.send("Sobes Front Bot запущен ✅");
 });
 
-bot.start();
+app.listen(port, "0.0.0.0", async () => {
+	console.log(`Сервер запущен на порту ${port}`);
+	await bot.api.setWebhook(`https://sobes-front-bot.onrender.com/bot `);
+});
